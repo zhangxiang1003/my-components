@@ -11,6 +11,22 @@ export default {
     autoLoading: {
       type: Boolean,
       default: false
+    },
+    autoConfirm: {
+      type: Boolean,
+      default: false
+    },
+    confirmConfig: {
+      type: Object,
+      default() {
+        return {
+          title: '提示',
+          message: '此操作将永久删除该数据, 是否继续?',
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      }
     }
   },
   data() {
@@ -20,6 +36,21 @@ export default {
   },
   methods: {
     handleClick() {
+      if (this.autoConfirm) {
+        const { title, message, confirmButtonText, cancelButtonText, type } =
+          this.confirmConfig
+        this.$confirm(message, title, {
+          confirmButtonText,
+          cancelButtonText,
+          type
+        })
+          .then(() => {
+            this.$emit('confirm')
+          })
+          .catch(() => {
+            this.$emit('cancel')
+          })
+      }
       if (this.autoLoading) {
         this.loadingStatus = true
       }
